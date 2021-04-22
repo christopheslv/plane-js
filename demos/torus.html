@@ -3,12 +3,12 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1">
-        <title>Plane.JS — Triangle</title>
+        <title>Plane.JS — Torus</title>
         <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" />
         <script type="module">
             import { Renderer } from '../src/renderer.js';
             import { SceneController } from '../src/scene.js';
-            import { Shape } from '../src/shape.js';
+            import { Torus } from './js/torus.js';
 
             class App extends SceneController{
                 constructor() {   
@@ -19,14 +19,14 @@
                     // Elapsed time to 0
                     this.t = 0;      
 
-                    // Let's create a defaulty triangle shape
-                    this.shape = new Shape();
+                    // Let's create a custom shape
+                    this.shape = new Torus(0.5, 0.25, 24, 24);
 
                     // Setup the renderer with the html canvas element, and use this app class as the scene controller
                     this.renderer = new Renderer(canvasElement, this ); 
 
-                    // Camera is 5 units behind origin on z axis, looks at origin, and is in upright position
-                    this.renderer.camera.lookAt([0,0,5], [0,0,0], [0,1,0]);
+                    // Camera is 3 units behind origin on z axis, looks at origin, and is in upright position
+                    this.renderer.camera.lookAt([0,0,3], [0,0,0], [0,1,0]);
 
                     // Add default shape to renderer scene 
                     this.renderer.addSceneNode(this.shape);
@@ -41,11 +41,8 @@
                     // Update scene and camera based on elapsed time
                     this.t += dt;
 
-                    // Move camera forward
-                    this.renderer.camera.lookAt([0,0, 10.0 - (this.t/1000)%8], [0,0,0], [0,1,0]);
-
-                    // Rotate shape on z axis
-                    this.shape.rotate(0,0,this.t/1000.);
+                    // Rotate shape on muyltiple axis
+                    this.shape.rotate(this.t/500, this.t/750, this.t/1000);
                 }
 
                 surfaceDidChange(width,height,density){

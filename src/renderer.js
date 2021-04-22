@@ -105,7 +105,10 @@ export class Renderer {
 
         this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
         this.gl.enable(this.gl.BLEND);
-        this.gl.disable(this.gl.DEPTH_TEST);
+        this.gl.enable(this.gl.DEPTH_TEST);
+
+        this.gl.enable(this.gl.CULL_FACE);
+        this.gl.cullFace(this.gl.BACK);
 
         // Clear before rendering
         this.clearCanvas();

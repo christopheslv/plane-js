@@ -21,7 +21,7 @@ const fragment_shader = `
     void main( void )
     {         
         // Final color
-        gl_FragColor = vec4(vUV.x*vUV.y, vUV.x, vUV.y, 1.0);
+        gl_FragColor = vec4(vUV.x-vUV.y/2.0, 0.0, vUV.y, 1.0);
 
         // Premultiply canvas output
         gl_FragColor.rgb *= gl_FragColor.a;
