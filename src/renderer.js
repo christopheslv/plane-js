@@ -33,8 +33,8 @@ export class Renderer {
         }
 
         this._camera = new Camera();
-        this._camera.setOrtho();
-        this._camera.lookAt([0,0,1000], [0,0,0], [0,1,0]);
+        this._camera.setPerspective();
+        this._camera.lookAt([0,0,3], [0,0,0], [0,1,0]);
 
         window.addEventListener('resize', () => this.resize(), false);
         this.resize();
@@ -60,6 +60,10 @@ export class Renderer {
     set bgColor( rgb ){
         this._bg = rgb;
         this._bg[3] = 1.0;
+    }
+
+    get camera(){
+        return this._camera;
     }
 
     // Scene graph methods
@@ -120,10 +124,12 @@ export class Renderer {
             }
 
             node.shader.useProgram();
-            node.shader.bindTexture(node.texture.glTexture);
+            
+            if(node.hasTexture){
+                node.shader.bindTexture(node.texture.glTexture);
+            }
+           
             node.shader.mvpMatrix = this._mvpMatrix;
-            node.shader.opacity = node.opacity;
-            node.shader.center = [node.position[0], node.position[1]];
             node.shader.resolution = [this.width, this.height];
 
             node.draw(this.gl); 

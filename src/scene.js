@@ -1,9 +1,16 @@
 import * as mat from './mat4.js';
+import { Shader } from './shader.js';
+
+export class SceneController {
+    constructor() {}
+    update(dt){}
+    surfaceDidChange(width,height,density){}
+}
 
 export class SceneNode {
     constructor() {
-        this.shader = null;
         this.texture = null;
+        
         this._opacity = 1.0;
         this._rotation = [0,0,0];
         this._position = [0,0,0];
@@ -17,6 +24,10 @@ export class SceneNode {
 
         // True when node has unrendered changes: position, rotation or geometry
         this._pendingRenderUpdates = false;
+    }
+
+    init(gl){
+        this.shader = new Shader(gl);
     }
 
     get hasPendingUpdates(){
@@ -39,12 +50,14 @@ export class SceneNode {
         this._opacity = newopacity;
     }
 
+    get hasTexture(){
+        return this.texture != null;
+    }
+
     get modelMatrix(){
         this.updateMatrix();
         return this._mMatrix;
     }
-
-    init(gl){}
 
     rotate(x,y,z){
         if(this._rotation[0] != x || this._rotation[1] != y || this._rotation[2] != z){
@@ -77,8 +90,3 @@ export class SceneNode {
     }
 }
 
-export class SceneController {
-    constructor() {}
-    update(dt){}
-    surfaceDidChange(width,height,density){}
-}
