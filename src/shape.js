@@ -42,16 +42,16 @@ export class Shape extends SceneNode{
         let i = 0;
 
         // bottom left
-        this._vdata[i] = -1.0; // x
-        this._vdata[i+1] = -1.0; // y
+        this._vdata[i] = -0.86; // x
+        this._vdata[i+1] = -0.5; // y
         this._vdata[i+2] = 0.0; // z
         this._vdata[i+3] = 0.0; // u
         this._vdata[i+4] = 0.0; // v
         i += this._vbo_stride;
 
         // bottom right
-        this._vdata[i] = 1.0;
-        this._vdata[i+1] = -1.0;
+        this._vdata[i] = 0.86;
+        this._vdata[i+1] = -0.5;
         this._vdata[i+2] = 0.0;
         this._vdata[i+3] = 1.0; // u
         this._vdata[i+4] = 0.0; // v
