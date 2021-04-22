@@ -33,15 +33,13 @@ export class Torus extends Shape{
                 vertex[0] = ( this.radius + this.tube * Math.cos( v ) ) * Math.cos( u );
                 vertex[1] = ( this.radius + this.tube * Math.cos( v ) ) * Math.sin( u );
                 vertex[2] = this.tube * Math.sin( v );
-                vertex[3] = 0.25 + (i / this.tubularSegments) % 0.5;  // u
-                vertex[4] = 0.25 + (j / this.radialSegments*2) % 0.5;  // v
+                vertex[3] = 0.25 + (i / this.tubularSegments);  // u
+                vertex[4] = 0.25 + (j / this.radialSegments);  // v
     
                 tempv.push( vertex );   
             }
         }
-        
-        let index = 0;
-    
+            
         // Generate faces
         for ( var j = 1; j <= this.radialSegments; j ++ ) {
             for ( var i = 1; i <= this.tubularSegments; i ++ ) {
