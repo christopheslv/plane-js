@@ -1,4 +1,4 @@
-# plane-js
+# PlaneJS
 
 ![alt text](https://github.com/christopheslv/plane-js/blob/main/assets/torus.gif?raw=true)
 
@@ -10,7 +10,7 @@ I decided to share the code as-is, with some examples, in case this serves some 
 
 ### Roadmap ###
 
-There is no specific plan or roadmap for now. However, this code-base might grow based on any needs I might have in the future, probably around shaders, creative coding, and lo-fi analog renderings.
+There is no specific plan or roadmap for now. However, this code-base might grow based on any specialized needs I might have in the future, probably around shaders, creative coding, and lo-fi analog renderings.
 
 
 ### Usage example ###
