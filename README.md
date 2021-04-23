@@ -1,6 +1,6 @@
-# PlaneJS
+# plane.js
 
-![alt text](https://github.com/christopheslv/plane-js/blob/main/assets/torus.gif?raw=true)
+![Rotating torus](https://github.com/christopheslv/plane-js/blob/main/assets/torus.gif?raw=true)
 
 ### A Low-level Javascript 3D library ###
 
@@ -15,7 +15,7 @@ There is no specific plan or roadmap for now. However, this code-base might grow
 
 ### Usage example ###
 
-Here is a simple example of how the code can be used
+A simple example of how the code can be used:
 
 ```js
 import { Renderer } from '../src/renderer.js';
@@ -28,32 +28,17 @@ class App extends SceneController{
     }
 
     run(canvasElement){
-        // Elapsed time to 0
         this.t = 0;      
-
-        // Let's create a custom shape
         this.shape = new Torus(0.5, 0.25, 24, 24);
-
-        // Setup the renderer with the html canvas element, and use this app class as the scene controller
         this.renderer = new Renderer(canvasElement, this ); 
-
-        // Camera is 3 units behind origin on z axis, looks at origin, and is in upright position
         this.renderer.camera.lookAt([0,0,3], [0,0,0], [0,1,0]);
-
-        // Add default shape to renderer scene 
         this.renderer.addSceneNode(this.shape);
-
-        // Starts rendering loop
         this.renderer.start();
     }
 
     // This is called on each animation frame
     update(dt){
-
-        // Update scene and camera based on elapsed time
         this.t += dt;
-
-        // Rotate shape on muyltiple axis
         this.shape.rotate(this.t/500, this.t/750, this.t/1000);
     }
 }
