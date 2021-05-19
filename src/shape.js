@@ -4,6 +4,9 @@ export class Shape extends SceneNode{
     constructor() {
         super();
 
+        this.width = 2.0;
+        this.height = 2.0;
+
         this.vertices = [];
         this._vbo_stride = 5;
      }
@@ -21,16 +24,28 @@ export class Shape extends SceneNode{
 
     /* Mesh Generation */
     
+    // Default shape is a 2.0 unit quad centered on origin
     // Fill in Vertex buffer (2 triangles per line)
     generateTriangles(){
         this.vertices = [];
 
+        let rx = this.width / 2.0;
+        let ry = this.height / 2.0;
+
         // default CCW front triangle: x, y, z, u, v
-        this.vertices.push( [-0.86, -0.5, 0.0, 0.0, 0.0] ); // bottom left
-        this.vertices.push( [0.86, -0.5, 0.0, 1.0, 0.0] );  // bottom right
-        this.vertices.push( [0.0, 1.0, 0.0, 0.5, 1.0] );    // top 
+        this.vertices.push( [-rx,-ry, 0.0, 0.0, 0.0] );   // bottom left
+        this.vertices.push( [ rx,-ry, 0.0, 1.0, 0.0] );   // bottom right
+        this.vertices.push( [ rx, ry, 0.0, 1.0, 1.0] );   // top right
+
+        this.vertices.push( [-rx, ry, 0.0, 0.0, 1.0] );   // top left
+        this.vertices.push( [-rx,-ry, 0.0, 0.0, 0.0] );   // bottom left
+        this.vertices.push( [ rx, ry, 0.0, 1.0, 1.0] );   // top right
         
         this.updateVBO()
+    }
+
+    updateGeometry(){
+        this.generateTriangles();
     }
 
     updateVBO(){

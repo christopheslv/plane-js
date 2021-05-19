@@ -18,20 +18,13 @@ export class SceneNode {
         this.mtrans = mat.identity();
         this.mrot = mat.identity();
         this._mMatrix = mat.identity();
-
-        // True when model matrix has to be updated: keeps a single matrix multiplication and only when needed
         this._pendingMatrixUpdates = false;
 
-        // True when node has unrendered changes: position, rotation or geometry
-        this._pendingRenderUpdates = false;
+        this.shader = new Shader();
     }
 
     init(gl){
-        this.shader = new Shader(gl);
-    }
-
-    get hasPendingUpdates(){
-        return this._pendingRenderUpdates;
+       this.shader.init(gl);
     }
 
     get position(){
@@ -64,7 +57,6 @@ export class SceneNode {
             this._rotation = [x,y,z];
             this.mrot = mat.eulerRotation([x,y,z]);
             this._pendingMatrixUpdates = true;
-            this._pendingRenderUpdates = true;
         }
     }
 
@@ -73,7 +65,6 @@ export class SceneNode {
             this._position = [x,y,z];
             this.mtrans = mat.translation([x,y,z]);
             this._pendingMatrixUpdates = true;
-            this._pendingRenderUpdates = true;
         }
     }
 
@@ -86,7 +77,6 @@ export class SceneNode {
 
     draw(gl){
         // any updates will be rendered on next render loop
-        this._pendingRenderUpdates = false;
     }
 }
 

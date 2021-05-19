@@ -116,11 +116,6 @@ export class Renderer {
         // Draw scene nodes
         for (var node of this._scene) {
 
-            //Update cached MVP matrix only if something did change
-            if(node.hasPendingUpdates || this._camera.hasPendingUpdates ){
-                this._mvpMatrix = mat.multiply(this._camera.viewProjectionMatrix, node.modelMatrix);
-            }
-
             if(!node.shader.program){
                 console.log("Invalid shader program");
                 continue;
@@ -132,7 +127,8 @@ export class Renderer {
                 node.shader.bindTexture(node.texture.glTexture);
             }
            
-            node.shader.mvpMatrix = this._mvpMatrix;
+            node.shader.vpMatrix = this._camera.viewProjectionMatrix;
+            node.shader.modelMatrix = node.modelMatrix;
             node.shader.resolution = [this.width, this.height];
 
             node.draw(this.gl); 

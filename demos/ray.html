@@ -3,12 +3,13 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1">
-        <title>Plane.JS — Triangle</title>
+        <title>Plane.JS — Ray Marching</title>
         <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" />
         <script type="module">
             import { Renderer } from '../src/renderer.js';
             import { SceneController } from '../src/scene.js';
-            import { Triangle } from './js/triangle.js';
+            import { Shape } from '../src/shape.js';
+            import { RayShader } from './js/rayshader.js';
 
             class App extends SceneController{
                 constructor() {   
@@ -16,40 +17,29 @@
                 }
 
                 run(canvasElement){
-                    // Elapsed time to 0
                     this.t = 0;      
-
-                    // Let's create a defaulty triangle shape
-                    this.shape = new Triangle();
-
-                    // Setup the renderer with the html canvas element, and use this app class as the scene controller
+                    
                     this.renderer = new Renderer(canvasElement, this ); 
+                    this.renderer.camera.setOrtho();
 
-                    // Camera is 5 units behind origin on z axis, looks at origin, and is in upright position
-                    this.renderer.camera.lookAt([0,0,5], [0,0,0], [0,1,0]);
+                    this.plane = new Shape();
+                    this.plane.shader = new RayShader(this.renderer);
 
-                    // Add default shape to renderer scene 
-                    this.renderer.addSceneNode(this.shape);
-
-                    // Starts rendering loop
+                    this.renderer.addSceneNode(this.plane);
                     this.renderer.start();
                 }
 
                 // This is called on each animation frame
                 update(dt){
-
-                    // Update scene and camera based on elapsed time
                     this.t += dt;
-
-                    // Move camera forward
-                    this.renderer.camera.lookAt([0,0, 10.0 - (this.t/1000)%8], [0,0,0], [0,1,0]);
-
-                    // Rotate shape on z axis
-                    this.shape.rotate(0,0,this.t/1000.);
+                    this.plane.shader.time = this.t;
                 }
 
                 surfaceDidChange(width,height,density){
                     // Do any geometry updates based on viewport size
+                    let ar = width / height;
+                    this.plane.width = this.plane.height * ar;
+                    this.plane.updateGeometry();
                 }
             }
 

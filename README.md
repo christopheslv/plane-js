@@ -36,7 +36,6 @@ class App extends SceneController{
         this.renderer.start();
     }
 
-    // This is called on each animation frame
     update(dt){
         this.t += dt;
         this.shape.rotate(this.t/500, this.t/750, this.t/1000);

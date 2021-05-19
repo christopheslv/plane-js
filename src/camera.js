@@ -6,6 +6,8 @@ export class Camera {
         this.vpHeight = 0;
         this.vpWidth = 0;
 
+        this.aspectRatio = 16/9;
+
         this._projectionMatrix = mat.identity();
         this._viewMatrix = mat.identity();
         this._vpMatrix = mat.identity();
@@ -32,14 +34,13 @@ export class Camera {
     }
 
     setPerspective(){
-        let aspectRatio = this.vpWidth / this.vpHeight;
-        this._projectionMatrix = mat.perspective(45.0 * Math.PI / 180.0, aspectRatio, 1.0, 100.0);
+        this._projectionMatrix = mat.perspective(45.0 * Math.PI / 180.0, this.aspectRatio, 1.0, 100.0);
         this.isOrtho = false;
         this._pendingMatrixUpdates = true;
     }
 
     setOrtho(){
-        this._projectionMatrix = mat.ortho(-this.vpWidth/2, this.vpWidth/2, -this.vpHeight/2, this.vpHeight/2, this.near, this.far);
+        this._projectionMatrix = mat.ortho(-this.aspectRatio, this.aspectRatio, -1.0, 1.0, this.near, this.far);
         this.isOrtho = true;
         this._pendingMatrixUpdates = true;
     }
@@ -51,6 +52,8 @@ export class Camera {
 
     update(){
         if(this._pendingMatrixUpdates){
+
+            this.aspectRatio = this.vpWidth / this.vpHeight;
 
             if(this.isOrtho){
                 this.setOrtho();
