@@ -9,6 +9,7 @@ const fragment_shader_ray = `
 
     const float far = 1000.0;
     const int max_depth = 50;
+    const float PI = 3.1415926538;
     const vec3 black = vec3(0.0, 0.0, 0.0); 
     const vec3 sky1 = vec3( 1.0, 1.0, 1.0);
     const vec3 sky2 = vec3( 0.25, 0.25, 0.25);
@@ -47,7 +48,8 @@ const fragment_shader_ray = `
         vec3 p;
 
         vec2 uv = gl_FragCoord.xy / resolution * 10.0;
-        vec2 seed = vec2(time/10000.0, time/10000.0);
+        float timeseed = fract(time/1000.0);
+        vec2 seed = vec2(timeseed, timeseed);
 
         for(int i=0;i<10;++i)
         {
@@ -177,23 +179,35 @@ const fragment_shader_ray = `
     void main( void ){         
 
         // Camera 
-        float focal_length = 1.0;
-        float aspect_ratio = resolution.x / resolution.y;
-        float vp_height = 2.0;
-        float vp_width = vp_height * aspect_ratio;
-
+       
         // Move along z axis
         float cz = 1.0 + sin(time/500.0);
 
-        vec3 origin = vec3( 0.0, 0.0, cz);
-        vec3 horizontal = vec3( vp_width, 0.0, 0.0);
-        vec3 vertical = vec3( 0.0, vp_height, 0.0);
-        vec3 ll_corner = origin - horizontal/2.0 - vertical/2.0 - vec3( 0.0, 0.0, focal_length);
+        vec3 lookfrom = vec3( 1.0, 1.0, cz);
+        vec3 lookat = vec3( 0.0, 0.0, -1.0);
+        vec3 vup = vec3( 0.0, 1.0, 0.0);
+
+        float vfov = 90.0;
+        float aspect_ratio = resolution.x / resolution.y;
+        float theta = vfov * PI / 180.0;
+        float h = tan(theta/2.0);
+        float vp_height = 2.0 * h;
+        float vp_width = aspect_ratio * vp_height;
+
+        vec3 w = normalize(lookfrom - lookat);
+        vec3 u = normalize(cross(vup,w));
+        vec3 v = cross(w,u);
+       
+        vec3 origin = lookfrom;
+        vec3 horizontal = vp_width*u;
+        vec3 vertical = vp_height*v;     
+
+        vec3 ll_corner = origin - horizontal/2.0 - vertical/2.0 - w;
 
         // Ray
-        float u = gl_FragCoord.x / resolution.x;
-        float v = gl_FragCoord.y / resolution.y; 
-        vec3 direction = ll_corner + u*horizontal + v*vertical - origin;
+        float s = gl_FragCoord.x / resolution.x;
+        float t = gl_FragCoord.y / resolution.y; 
+        vec3 direction = ll_corner + s*horizontal + t*vertical - origin;
         ray r = ray(origin, direction);
 
         // Final color 

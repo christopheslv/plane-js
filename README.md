@@ -2,20 +2,19 @@
 
 ![Rotating torus](https://github.com/christopheslv/plane-js/blob/main/assets/torus.gif?raw=true)
 
-### A Low-level Javascript 3D library ###
+### A Low-level 3D experimentation library in javascript ###
 
-A very basic WebGL rendering library, based on JS ES6 modules, that I started from scratch for my [portfolio](https://cslv.me/).
-I decided to share the code as-is, with some examples, in case this serves some projects somewhere.
+A very simple rendering library, based on JS ES6 modules, I did start from scratch for my [portfolio](https://cslv.me/).
 
 
 ### Roadmap ###
 
-There is no specific plan or roadmap for now. However, this code-base might grow based on any specialized needs I might have in the future, probably around shaders, creative coding, and lo-fi analog renderings.
+There is no specific plan or roadmap for now. However, this code-base might grow based on any specialized needs or experiments I might explore in the future, probably around shaders, creative coding, and lo-fi analog renderings.
 
 
 ### Usage example ###
 
-A simple example of how the code can be used:
+An example of how the code can be used:
 
 ```js
 import { Renderer } from '../src/renderer.js';
