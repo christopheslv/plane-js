@@ -1,11 +1,32 @@
 export class Texture {
-    constructor(gl, url) {
+    constructor() {
         this._gl_texture = null;
+        this.gl = null;
+        this.url = null;
+        this._isLoaded = false;
+
+        this.width = 0;
+        this.height = 0;
+        this.internalFormat = null;
+    }
+
+    init(gl, width, height){
+        this.width = width;
+        this.height = height;
+        this._gl_texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, this._gl_texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA,
+            this.width, this.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    }
+
+    initFromURL(gl, url){
         this.gl = gl;
         this.url = url;
         this._isLoaded = false;
-
-        this.load(this.gl);
+        this.loadFromImage(this.gl);
     }
 
     get glTexture(){
@@ -16,7 +37,7 @@ export class Texture {
         return this._isLoaded;
     }
 
-    load(gl) {
+    loadFromImage(gl) {
         this._gl_texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, this._gl_texture);
     

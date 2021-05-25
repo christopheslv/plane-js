@@ -33,7 +33,7 @@ const fragment_shader_default = `
 
 export class Shader{
     constructor() {
-        this._program = null;
+        this.program = null;
         this._matrixLocation = null;
         this._modelMatLocation = null;
         this._resolutionLocation = null;
@@ -43,13 +43,12 @@ export class Shader{
 
     init(gl){
         this.gl = gl;
-        this._program = this.createProgram(gl, this.vertexShader , this.fragmentShader);
+        this.program = this.createProgram(gl, this.vertexShader , this.fragmentShader);
 
-        this._matrixLocation = this.gl.getUniformLocation( this._program, 'vpMat' );
-        this._modelMatLocation = this.gl.getUniformLocation( this._program, 'modelMat' );
-        this._resolutionLocation = this.gl.getUniformLocation( this._program, 'resolution' );
-        this._textureLocation = this.gl.getUniformLocation( this._program, 'texture' );
-        this._timeLocation = this.gl.getUniformLocation( this._program, 'time' );
+        this._matrixLocation = this.gl.getUniformLocation( this.program, 'vpMat' );
+        this._modelMatLocation = this.gl.getUniformLocation( this.program, 'modelMat' );
+        this._resolutionLocation = this.gl.getUniformLocation( this.program, 'resolution' );
+        this._timeLocation = this.gl.getUniformLocation( this.program, 'time' );
     }
 
     get vertexShader(){
@@ -60,18 +59,14 @@ export class Shader{
         return fragment_shader_default;
     }
 
-    get program(){
-        return this._program;
-    }
-
     useProgram(){
-        this.gl.useProgram( this._program );
+        this.gl.useProgram( this.program );
     }
 
-    bindTexture(texture){
-        this.gl.activeTexture(this.gl.TEXTURE0);
+    bindTexture(texture, texNum = 0){
+        this.gl.activeTexture(texNum == 0 ? this.gl.TEXTURE0 : this.gl.TEXTURE1);
         this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
-        this.gl.uniform1i(this._textureLocation, 0);
+        this.gl.uniform1i(this.gl.getUniformLocation( this.program, 'texture' ), texNum);
     }
 
     set vpMatrix(mat){
@@ -89,6 +84,7 @@ export class Shader{
     set time(tt){
         this.gl.uniform1f( this._timeLocation, tt);
     }
+
 
     createProgram(gl, vertex, fragment) {
     

@@ -21,6 +21,7 @@
                     
                     this.renderer = new Renderer(canvasElement, this ); 
                     this.renderer.camera.setOrtho();
+                    this.renderer.doubleBuffering = true;
 
                     this.plane = new Shape();
                     this.plane.shader = new RayShader(this.renderer);
@@ -33,6 +34,7 @@
                 update(dt){
                     this.t += dt;
                     this.plane.shader.time = this.t;
+                    this.plane.shader.samplingStart = this.t - 250;
                 }
 
                 surfaceDidChange(width,height,density){

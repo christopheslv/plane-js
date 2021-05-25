@@ -6,13 +6,14 @@ const fragment_shader_ray = `
     uniform vec2 resolution; 
     uniform sampler2D texture;
     uniform float time;
+    uniform float sampling_start;
 
     const float far = 1000.0;
     const int max_depth = 50;
     const float PI = 3.1415926538;
     const vec3 black = vec3(0.0, 0.0, 0.0); 
     const vec3 sky1 = vec3( 1.0, 1.0, 1.0);
-    const vec3 sky2 = vec3( 0.25, 0.25, 0.25);
+    const vec3 sky2 = vec3( 52.0/255.0, 52.0/255.0, 72.0/255.0);
     
     float length_squared(vec3 v){
         return v.x * v.x + v.y * v.y + v.z * v.z;
@@ -42,25 +43,29 @@ const fragment_shader_ray = `
         float t;
         bool front_face;
     };
+
+    vec3 rand_unit() {
+        vec2 uv = gl_FragCoord.xy / resolution * 10.0;
+        float timeseed = fract(time/1000.0);
+        vec2 seed = vec2(timeseed, timeseed);
+
+        float px = 2.0 * rand(uv+seed) - 1.0;
+        seed += vec2(0.0001, 0.0002);
+        float py = 2.0 * rand(uv+seed) - 1.0;
+        seed += vec2(0.0001, 0.0002);
+        float pz = 2.0 * rand(uv+seed) - 1.0;
+        seed += vec2(0.0001, 0.0002);
+
+        return vec3(px, py, pz);
+    }
     
     vec3 rand_in_unit_sphere() {
         float lp = 1.0;
         vec3 p;
 
-        vec2 uv = gl_FragCoord.xy / resolution * 10.0;
-        float timeseed = fract(time/1000.0);
-        vec2 seed = vec2(timeseed, timeseed);
-
         for(int i=0;i<10;++i)
         {
-            float px = 2.0 * rand(uv+seed) - 1.0;
-            seed += vec2(0.0001, 0.0002);
-            float py = 2.0 * rand(uv+seed) - 1.0;
-            seed += vec2(0.0001, 0.0002);
-            float pz = 2.0 * rand(uv+seed) - 1.0;
-            seed += vec2(0.0001, 0.0002);
-
-            p = vec3(px, py, pz);
+            p = rand_unit();
             lp = length(p); 
             if (lp < 1.0)
                 return p;
@@ -173,15 +178,15 @@ const fragment_shader_ray = `
 
         // Gamma correct
         vec3 color = vec3( sqrt(color_final.x), sqrt(color_final.y), sqrt(color_final.z));
-         return color;
+        return color;
     }
 
     void main( void ){         
 
         // Camera 
-       
+    
         // Move along z axis
-        float cz = 1.0 + sin(time/500.0);
+        float cz = 1.0 + sin(time/1000.0);
 
         vec3 lookfrom = vec3( 1.0, 1.0, cz);
         vec3 lookat = vec3( 0.0, 0.0, -1.0);
@@ -197,35 +202,48 @@ const fragment_shader_ray = `
         vec3 w = normalize(lookfrom - lookat);
         vec3 u = normalize(cross(vup,w));
         vec3 v = cross(w,u);
-       
+    
         vec3 origin = lookfrom;
         vec3 horizontal = vp_width*u;
         vec3 vertical = vp_height*v;     
 
         vec3 ll_corner = origin - horizontal/2.0 - vertical/2.0 - w;
 
+        // Antialias samples per pixel
+        vec3 aa = normalize(rand_unit());
+
         // Ray
-        float s = gl_FragCoord.x / resolution.x;
-        float t = gl_FragCoord.y / resolution.y; 
+        float s = (gl_FragCoord.x+aa.x) / resolution.x;
+        float t = (gl_FragCoord.y+aa.y) / resolution.y; 
         vec3 direction = ll_corner + s*horizontal + t*vertical - origin;
         ray r = ray(origin, direction);
 
-        // Final color 
-        gl_FragColor = vec4(hit_color(r).xyz, 1.0);
+        // Final color
+        vec2 tpos = vec2(gl_FragCoord.x / resolution.x,gl_FragCoord.y / resolution.y);
+        vec4 raycolor = vec4(hit_color(r).xyz, 1.0);
 
-
-        // Premultiply canvas output
-        gl_FragColor.rgb *= gl_FragColor.a;
+        // Add sample to previous frames
+        float samples_count = max(1.0, min((time-sampling_start) / 16.0, 500.0));
+        gl_FragColor = (raycolor + texture2D(texture, tpos) * (samples_count-1.0)) / samples_count;
+       
     }
 `;
 
 export class RayShader extends Shader{
     constructor() {
         super();
-        
+    }
+
+    init(gl){
+        super.init(gl);
+        this._sampleStartLocation = this.gl.getUniformLocation( this.program, 'sampling_start' );
     }
     
     get fragmentShader(){
         return fragment_shader_ray;
+    }
+
+    set samplingStart(ss){
+        this.gl.uniform1f(this._sampleStartLocation, ss);
     }
 }

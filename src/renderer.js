@@ -2,6 +2,37 @@ import * as mat from './mat4.js';
 import animationFrameInstance from './animationframe.js';
 import browser from './browser.js';
 import { Camera } from './camera.js';
+import { Texture } from './texture.js';
+import { Shader } from './shader.js';
+import { Shape } from './shape.js';
+
+class Framebuffer {
+    constructor(gl, width, height) {
+        this.gl = gl;
+        this.texture = new Texture();
+        this.texture.init(this.gl, width, height);
+        this.glBuffer = this.gl.createFramebuffer();
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.glBuffer);
+        this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.TEXTURE_2D, this.texture.glTexture, 0);
+    }
+}
+
+class BufferShader extends Shader{
+    constructor() {
+        super();
+    }
+
+    get fragmentShader(){
+        return `
+            uniform vec2 resolution; 
+            uniform sampler2D texture;
+
+            void main( void ){         
+                gl_FragColor = texture2D(texture, vec2(gl_FragCoord.x/ resolution.x, gl_FragCoord.y/ resolution.y));
+            }
+        `;
+    }
+}
 
 export class Renderer {
 
@@ -23,6 +54,13 @@ export class Renderer {
         this._bg = [0,0,0,0];
         
         this.init();
+
+        // Double buffering
+        this._doubleBuffering = false;
+        this._isRenderingToBuffer = false;
+        this._buffer = [];
+        this._bIndex = 0;
+        this._bufferQuad = null;
     }
 
     init(){
@@ -38,6 +76,37 @@ export class Renderer {
 
         window.addEventListener('resize', () => this.resize(), false);
         this.resize();
+    }
+
+    initBuffers(){
+        if(this.doubleBuffering){
+            // First frame buffer
+            this._buffer[0] = new Framebuffer(this.gl, this.width, this.height);
+            this._buffer[1] = new Framebuffer(this.gl, this.width, this.height);
+            this._fbIndex = 0;
+
+            if(this._bufferQuad == null ) {
+                this._bufferQuad = new Shape();
+                this._bufferQuad.shader = new BufferShader();
+                this._bufferQuad.init(this.gl);
+            }
+        }
+    }
+
+    bindBuffer(){
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.frontBuffer.glBuffer);
+    }
+
+    swapBuffers(){
+        this._bIndex = 1 - this._bIndex;
+    }
+
+    get frontBuffer(){
+        return this._buffer[this._bIndex];
+    }
+
+    get backBuffer(){
+        return this._buffer[1-this._bIndex];
     }
 
     // Accessors 
@@ -64,6 +133,19 @@ export class Renderer {
 
     get camera(){
         return this._camera;
+    }
+
+    get doubleBuffering(){
+        return this._doubleBuffering;
+    }
+
+    set doubleBuffering(rt = false){
+        if (rt){
+            this._doubleBuffering = true;
+            this.initBuffers();
+        }else{
+            this._doubleBuffering = false;
+        }
     }
 
     // Scene graph methods
@@ -105,14 +187,28 @@ export class Renderer {
 
         this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
         this.gl.enable(this.gl.BLEND);
-        this.gl.enable(this.gl.DEPTH_TEST);
-
         this.gl.enable(this.gl.CULL_FACE);
         this.gl.cullFace(this.gl.BACK);
+        this.gl.enable(this.gl.DEPTH_TEST);
 
-        // Clear before rendering
+
+        // Render to buffer 
+        if(this.doubleBuffering){
+            this.bindBuffer();
+        }
+        
+        // Render
         this.clearCanvas();
-                
+        this.renderScene();       
+        
+        // Render front buffer and swap them
+        if(this.doubleBuffering){
+            this.renderBuffer();
+            this.swapBuffers();
+        }
+    }
+
+    renderScene(){
         // Draw scene nodes
         for (var node of this._scene) {
 
@@ -126,7 +222,13 @@ export class Renderer {
             if(node.hasTexture){
                 node.shader.bindTexture(node.texture.glTexture);
             }
-           
+            
+            // Bind back buffer as texture
+            if(this.doubleBuffering){
+                node.shader.bindTexture(this.backBuffer.texture.glTexture, 1);
+                node.shader.useRenderedTexture = false;
+            }
+        
             node.shader.vpMatrix = this._camera.viewProjectionMatrix;
             node.shader.modelMatrix = node.modelMatrix;
             node.shader.resolution = [this.width, this.height];
@@ -135,6 +237,13 @@ export class Renderer {
         }
     }
     
+    renderBuffer(){
+        this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+        this._bufferQuad.shader.bindTexture(this.frontBuffer.texture.glTexture, 1);
+        this._bufferQuad.resolution = [this.width, this.height];
+        this._bufferQuad.draw(this.gl); 
+    }
+
     // Canvas routines: clear, resize
     clearCanvas(){
         this.gl.clearColor(this._bg[0], this._bg[1], this._bg[2], this._bg[3]);
@@ -174,6 +283,7 @@ export class Renderer {
 
     resizeViewport(){
           // Update viewport dependent contexts
+          this.initBuffers();
           this.gl.viewport( 0, 0, this.width, this.height);
           this._camera.setViewport(this.width, this.height);
           this._sceneController.surfaceDidChange(this.width, this.height, this._density);
