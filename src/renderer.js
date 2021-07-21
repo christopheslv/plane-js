@@ -36,7 +36,7 @@ class BufferShader extends Shader{
 
 export class Renderer {
 
-    constructor(canvas, sceneController) {
+    constructor(canvas=null, sceneController) {
         this._canvas = canvas;
         this.gl = null;
         this.width = 0;
@@ -58,7 +58,7 @@ export class Renderer {
         // Double buffering
         this._doubleBuffering = false;
         this._isRenderingToBuffer = false;
-        this._buffer = [];
+        this._buffers = [];
         this._bIndex = 0;
         this._bufferQuad = null;
     }
@@ -68,6 +68,7 @@ export class Renderer {
             this.gl = this._canvas.getContext('webgl');
         } catch( error ) { 
             console.log("Cannot create webGL context");
+            return;
         }
 
         this._camera = new Camera();
@@ -81,8 +82,8 @@ export class Renderer {
     initBuffers(){
         if(this.doubleBuffering){
             // First frame buffer
-            this._buffer[0] = new Framebuffer(this.gl, this.width, this.height);
-            this._buffer[1] = new Framebuffer(this.gl, this.width, this.height);
+            this._buffers[0] = new Framebuffer(this.gl, this.width, this.height);
+            this._buffers[1] = new Framebuffer(this.gl, this.width, this.height);
             this._fbIndex = 0;
 
             if(this._bufferQuad == null ) {
@@ -102,11 +103,11 @@ export class Renderer {
     }
 
     get frontBuffer(){
-        return this._buffer[this._bIndex];
+        return this._buffers[this._bIndex];
     }
 
     get backBuffer(){
-        return this._buffer[1-this._bIndex];
+        return this._buffers[1-this._bIndex];
     }
 
     // Accessors 
@@ -252,6 +253,10 @@ export class Renderer {
 
     // TODO wait for user to stop resizing the canvas before computing everything
     resize(forcelayout = false) {
+        if(this._canvas == null){
+            return;
+        }
+        
         this._density = browser.retina ? 2 : 1;
 
         // Check if height did change beyond mobile safari toolbar scroll

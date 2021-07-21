@@ -1,5 +1,3 @@
-import { Shape } from '../../src/shape.js';
-
 export class Triangle extends Shape{
 
     constructor() {

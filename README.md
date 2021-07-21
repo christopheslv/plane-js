@@ -45,6 +45,18 @@ const app = new App();
 document.addEventListener('DOMContentLoaded', (e) => app.run(document.getElementById("renderer")) )
 ```
 
+### Library ###
+
+Bundled JS library files are available in the /dist folder, and can be generated through npm:
+
+```sh
+# Bundle 
+npm run build
+
+# Minified bundle
+npm run build-min
+```
+
 ### Demos ###
 
 The examples can be executed in WebGL compatible browser by using a local webserver, eg. with python:

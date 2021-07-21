@@ -1,7 +1,4 @@
 // Raytracing code inspired by https://raytracing.github.io/books/RayTracingInOneWeekend.html#surfacenormalsandmultipleobjects/frontfacesversusbackfaces
-
-import { Shader } from '../../src/shader.js';
-
 const fragment_shader_ray = `
     uniform vec2 resolution; 
     uniform sampler2D texture;

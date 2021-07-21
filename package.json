@@ -1,0 +1,24 @@
+{
+  "name": "PlaneJS",
+  "version": "1.0.0",
+  "description": "A Low-level 3D experimentation library in javascript",
+  "main": "index.js",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/christopheslv/plane-js.git"
+  },
+  "author": "Christophe da Silva",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/christopheslv/plane-js/issues"
+  },
+  "scripts": {
+    "build": "esbuild src/index.js --bundle --target=es2015 --platform=neutral --outfile=dist/plane.js",
+    "build-min": "esbuild src/index.js --bundle --target=es2015 --minify --platform=neutral --outfile=dist/plane.min.js"
+  },
+  "homepage": "https://github.com/christopheslv/plane-js#readme",
+  "dependencies": {
+    "esbuild": "^0.12.15"
+  }
+}
