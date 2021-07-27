@@ -1,6 +1,8 @@
 // Credits: based on Three JS torus geometry
 // https://github.com/mrdoob/three.js/blob/d49bb0e85f9c013198dc5a6c0f94f0bbe6a02add/src/extras/geometries/TorusGeometry.js
 
+import { Shape } from '../../dist/plane.js';
+
 export class Torus extends Shape{
     constructor(radius, tube, radialSegments, tubularSegments) {
         super();

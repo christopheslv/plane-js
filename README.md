@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', (e) => app.run(document.getElement
 
 ### Library ###
 
-Bundled JS library files are available in the /dist folder, and can be generated through npm:
+Bundled JS library files are available in the /dist folder, and can be generated with esbuild through an npm command:
 
 ```sh
 # Bundle 

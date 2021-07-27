@@ -1,3 +1,5 @@
+import { Shape } from '../../dist/plane.js';
+
 export class Triangle extends Shape{
 
     constructor() {

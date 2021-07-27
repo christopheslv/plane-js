@@ -861,7 +861,9 @@ var Renderer = class {
     this._sceneController.surfaceDidChange(this.width, this.height, this._density);
   }
 };
-
-// src/index.js
-var _SceneController = new SceneController();
-var _Renderer = new Renderer();
+export {
+  Renderer,
+  SceneController,
+  Shader,
+  Shape
+};

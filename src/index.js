@@ -3,8 +3,11 @@
 import { Renderer} from './renderer.js';
 import { SceneController } from './scene.js';
 import { Shape } from './shape.js';
+import { Shader } from './shader.js';
 
-// Force bundler tree
-const _Shape = Shape;
-const _SceneController = new SceneController;
-const _Renderer = new Renderer;
+export {
+    Renderer,
+    Shape,
+    SceneController,
+    Shader,
+  };
