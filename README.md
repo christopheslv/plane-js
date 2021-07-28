@@ -17,9 +17,8 @@ There is no specific plan or roadmap for now. However, this code-base might grow
 An example of how the code can be used:
 
 ```js
-import { Renderer } from '../src/renderer.js';
-import { SceneController } from '../src/scene.js';
-import { Torus } from './js/torus.js';
+import { Renderer, SceneController } from './dist/plane.js';
+import { Torus } from '.demos/js/torus.js';
 
 class App extends SceneController{
     constructor() {   
@@ -47,7 +46,7 @@ document.addEventListener('DOMContentLoaded', (e) => app.run(document.getElement
 
 ### Library ###
 
-Bundled JS library files are available in the /dist folder, and can be generated with esbuild through an npm command:
+Bundled JS library files are available in the /dist folder, can be generated with esbuild through an npm command:
 
 ```sh
 # Bundle 
