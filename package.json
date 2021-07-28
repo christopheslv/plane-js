@@ -1,6 +1,6 @@
 {
   "name": "PlaneJS",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "A Low-level 3D experimentation library in javascript",
   "main": "index.js",
   "private": true,
