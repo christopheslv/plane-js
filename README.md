@@ -1,10 +1,11 @@
 # plane.js
 
-![Rotating torus](https://github.com/christopheslv/plane-js/blob/main/assets/torus.gif?raw=true)
+![Rotating torus](https://github.com/christopheslv/plane-js/blob/main/assets/torus.gif?raw=true) ![Rotating spheres](https://github.com/christopheslv/plane-js/blob/main/assets/ray.gif?raw=true)
+
 
 ### A Low-level 3D experimentation library in javascript ###
 
-A very simple rendering library, based on JS ES6 modules, I did start from scratch for my [portfolio](https://cslv.me/).
+A very simple rendering library, based on JS ES6 modules, that I did start from scratch for my [portfolio](https://cslv.me/).
 
 
 ### Roadmap ###
